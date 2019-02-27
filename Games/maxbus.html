@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<link href="http://fonts.googleapis.com/cas?family=Walter+Turncoat&.css" rel="stylesheet"/>
+<script src="../p5.js"></script>
+<script>
+var p1y=300;
+
+var record = 0;
+
+var p2y=250;
+
+var ballx=250;
+
+var bally=250;
+
+var dx=1;
+
+var dy=2;
+
+var dp1y=1;
+
+var dp2y=1;
+
+var f;
+
+var score=0;
+
+var scorechanged;
+
+var scorechanged2;
+
+var score2=0;
+
+var tempdy;
+
+var tempdx;
+
+var carry=false;
+
+var carry2=false;
+
+var predictedlocation;
+
+var yint;
+
+var xint;
+
+var xint2;
+
+var predictedlocation2;
+
+var p2yint;
+
+var p2xint;
+
+var p2xint2;
+
+var ai=true;
+
+var ai2=false;
+
+var youlosep1=false;
+
+var youlosep2=false;
+
+var keys=[false,false,false,false];
+
+
+function setup(){
+createCanvas(500,500);
+}
+
+function keyPressed()
+
+{
+
+if(ballx>=width/10+25&&ballx<=width/10+35&&keyCode===SHIFT&&bally<=p1y+100&&bally>=p1y&&(!carry)){
+
+tempdy=dy;
+
+dy=0;
+
+tempdx=dx;
+
+dx=0;
+
+carry=true;
+
+}
+
+else if(keyCode===SHIFT&&carry){
+
+dy=tempdy;
+
+dx=tempdx;
+
+carry =false;
+
+}
+
+if(ballx<=9*width/10-5&&ballx>=9*width/10-25&&keyCode===ENTER&&bally<=p2y+100&&bally>=p2y&&(!carry2)){
+
+tempdy=dy;
+
+dy=0;
+
+tempdx=dx;
+
+dx=0;
+
+carry2=true;
+
+}
+
+else if(keyCode===ENTER&&carry2){
+
+dy=tempdy;
+
+dx=tempdx;
+
+carry2 =false;
+
+}
+
+if(key==='h'){
+
+ai=!ai;
+
+}
+
+
+
+if(key==='g'){
+
+ai2=!ai2;
+
+}
+
+if(!ai2){
+
+if(key==='w')
+
+keys[0]=true;
+
+if(key==='s')
+
+keys[1]=true;
+
+}
+
+if(!ai){
+
+if(keyCode===UP_ARROW)
+
+keys[2]=true;
+
+if(keyCode===DOWN_ARROW)
+
+keys[3]=true;
+
+}
+
+if((youlosep1||youlosep2) &&keyCode===ENTER){
+
+youlosep1=false;
+
+youlosep2=false;
+
+ballx=250;
+
+bally=250;
+
+dx=1;
+
+dy=2;
+
+dp1y=1;
+
+dp2y=1;
+
+carry=false;
+
+record=0;
+
+ai=false;
+
+ai2=false;
+
+score=0;
+
+scorechanged=false;
+
+scorechanged2=false;
+
+score2=0;
+
+}
+
+}
+
+function keyReleased(){
+
+
+
+if(!ai2){
+
+if(key==='w')
+
+keys[0]=false;
+
+if(key==='s')
+
+keys[1]=false;
+
+
+
+}
+
+if(!ai){
+
+if(keyCode===UP_ARROW)
+
+keys[2]=false;
+
+if(keyCode===DOWN_ARROW)
+
+keys[3]=false;
+
+}
+
+}
+
+function draw(){
+
+if(ai){
+
+keys[2]=false;
+
+keys[3]=false;
+
+yint= dy*-ballx+bally;
+
+xint =-yint/dy;
+
+xint2=(500-yint)/dy;
+
+if(dy>0&&xint2<(9*width/10-5)){
+
+predictedlocation=((9*width/10-5)-xint2)*-dy+500;
+
+}
+
+else if(dy<0&&xint<(9*width/10-5)){
+
+predictedlocation=((9*width/10-5)-xint)*-dy;
+
+}
+
+else {
+
+// predictedlocation= dy*((9*width/10-5)-ballx)+bally;
+
+}
+
+if(predictedlocation<p2y+50){
+
+keys[2]=true;
+
+}
+
+if(predictedlocation>p2y+50){
+
+keys[3]=true;
+
+}
+
+}
+
+if(ai2){
+
+keys[0]=false;
+
+keys[1]=false;
+
+p2yint= (dy*dx)*-ballx+bally;
+
+p2xint =-p2yint/(dy*dx);
+
+p2xint2=(500-p2yint)/(dy*dx);
+
+if(dy>0&&p2xint2>(width/10+25)){
+
+predictedlocation2=((width/10+25)-p2xint2)*(-dy*dx)+500;
+
+}
+
+else if(dy<0&&p2xint>(width/10+25)){
+
+predictedlocation2=((width/10+25)-p2xint)*(-dy*dx);
+
+}
+
+else {
+
+//predictedlocation2= (dy*dx)*((width/10+25)-ballx)+bally;
+
+}
+
+if(predictedlocation2<p1y+50){
+
+keys[0]=true;
+
+}
+
+if(predictedlocation2>p1y+50){
+
+keys[1]=true;
+
+}
+
+}
+
+if(!(youlosep1||youlosep2)){
+
+if(keys[0]&&p1y>0){
+
+p1y-=dp1y;
+
+if(carry){
+
+bally-=dp1y;
+
+}
+
+background(255,255,255);
+
+ellipse(ballx,bally,10,10);
+
+rect(width*9/10,p2y,20,100);
+
+rect(width/10,p1y,20,100);
+
+}
+
+else if(keys[1]&&p1y<400){
+
+p1y+=dp1y;
+
+if(carry){
+
+bally+=dp1y;
+
+}
+
+background(255,255,255);
+
+ellipse(ballx,bally,10,10);
+
+rect(width*9/10,p2y,20,100);
+
+rect(width/10,p1y,20,100);
+
+}
+
+
+
+if(keys[2]&&p2y>0){
+
+p2y-=dp2y;
+
+if(carry2){
+
+bally-=dp2y;
+
+}
+
+background(255,255,255);
+
+ellipse(ballx,bally,10,10);
+
+rect(width/10,p1y,20,100);
+
+rect(width*9/10,p2y,20,100);
+
+}
+
+else if(keys[3]&&p2y<400){
+
+p2y+=dp2y;
+
+if(carry2){
+
+bally+=dp2y;
+
+}
+
+background(255,255,255);
+
+ellipse(ballx,bally,10,10);
+
+rect(width/10,p1y,20,100);
+
+rect(width*9/10,p2y,20,100);
+
+}
+
+if(!youlosep1&&!youlosep2){
+if(record<=56){
+ballx+=(record/4)*dx+1*dx;
+
+bally+=(record/4)*dy+1*dy;
+}
+else{
+ballx+=(56/4)*dx+1*dx;
+bally+=(56/4)*dy+1*dy;
+}
+}
+
+if((ballx<=width/10+25&&ballx>=width/10&&bally<=p1y+100&&bally>=p1y)||(ballx>=width*9/10-5&&ballx<=width*9/10+20&&bally<=p2y+100&&bally>=p2y)){
+
+if(ballx<=width/10+25&&ballx>=width/10){
+
+ballx=width/10+25+1;
+
+
+
+}
+
+else{
+
+ballx=width*9/10-5-1;
+
+}
+
+dx*=-1;
+if(record<=60){
+dp1y=record/4+1;
+
+dp2y=record/4+1;
+}
+else{
+dp1y=(60/4)+1;
+
+dp2y=(60/4)+1;
+}
+record++;
+
+
+}
+
+if(bally<=5||bally>=height-5){
+if(bally<=5){
+bally=6;
+}
+dy*=-1;
+
+}
+
+
+
+if(ballx<=5&&(ai||ai2)||(score>=10||score2>=10)){
+
+youlosep1=true;
+
+}
+
+else if(ballx<=5&&!scorechanged){
+
+score2++;
+
+ballx=250;
+
+bally=250;
+
+
+
+}
+
+
+
+if(ballx>=width-5&&(ai||ai2)||(score>=10||score2>=10)){
+
+youlosep2=true;
+
+}
+
+else if(ballx>=width-5&&!scorechanged2){
+
+score++;
+
+ballx=250;
+
+bally=250;
+
+
+
+}
+
+
+
+background(0,0,0);
+
+ellipse(ballx,bally,10,10);
+
+rect(width*9/10,p2y,20,100);
+
+rect(width/10,p1y,20,100);
+
+if(ai||ai2){
+
+textFont("Georgia");
+
+fill(0,255,0);
+
+text(record+"",width/2-10,height/2);
+
+}
+
+else{
+
+textFont("Georgia");
+
+fill(0,255,0);
+
+text(score+"",width/4-10,height/10);
+
+text(score2+"",3*width/4-10,height/10);
+
+}
+
+}
+
+if(youlosep1||youlosep2){
+
+background(0);
+
+textFont("georgia");
+
+fill(255);
+
+var player;
+
+if(youlosep1){
+
+player="P1";
+
+
+
+}
+
+else{
+
+
+
+player="P2";
+
+}
+
+text(player+" loses. Press enter to play again!",width/4,height/2);
+
+}
+
+}
+</script>
+</body>
+</html>
